@@ -1,50 +1,33 @@
-const { ethers } = require("hardhat");
+// We require the Hardhat Runtime Environment explicitly here. This is optional
+// but useful for running the script in a standalone fashion through `node <script>`.
+//
+// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
+// will compile your contracts, add the Hardhat Runtime Environment's members to the
+// global scope, and execute the script.
+const hre = require("hardhat");
 
-const main = async () => {
-  console.log(`Preparing deployment...\n`);
+async function main() {
+  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
+  const unlockTime = currentTimestampInSeconds + 60;
 
-  // Get contracts
-  const MyToken = await ethers.getContractFactory("MyToken");
+  const lockedAmount = hre.ethers.parseEther("0.001");
 
-  // Fetch accounts
-  const accounts = await ethers.getSigners();
+  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
+    value: lockedAmount,
+  });
+
+  await lock.waitForDeployment();
 
   console.log(
-    `Accounts fetched:\n${accounts[0].address}\n${accounts[1].address}\n`
+    `Lock with ${ethers.formatEther(
+      lockedAmount
+    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
   );
-    
-  // Deploy contract
-  const myToken = await MyToken.deploy();
-  await myToken.deployed();
+}
 
-  console.log(`MyToken Deployed to: ${myToken.address}`);
-
-   //   Give tokens to accounts[1]
-   const sender = accounts[0];
-   const receiver = accounts[1];
-
-   // user1 transfer 10,000 SiToken
-   let transaction, result;
-   transaction = await myToken.connect(sender).transfer(
-     receiver.address,
-     amount
-   );
- 
-   console.log(
-     `Transferred ${amount} tokens from ${sender.address} to ${receiver.address}\n`
-   );
- 
-
-};
-
-const runMain = async () => {
-  try {
-    await main();
-    process.exit(0);
-  } catch (err) {
-    console.log(err);
-    process.exit(1);
-  }
-};
-
-runMain();
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
