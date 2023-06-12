@@ -1,0 +1,17 @@
+{
+  "name": "metacrafters-errorhandling",
+  "version": "1.0.0",
+  "description": "It explains error handling use cases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "hardhat": "^2.15.0"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0"
+  }
+}
